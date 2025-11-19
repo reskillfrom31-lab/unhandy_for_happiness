@@ -1,5 +1,14 @@
 {
+  // 既存の設定（カンマを追加）
   "cSpell.words": [
-    "checklists"
-  ]
+      "checklists"
+  ], // <-- ここにカンマが必要です
+
+  // Ruby LSP の設定
+  "ruby.interpreter.command": "/home/back2/.rbenv/shims/ruby",
+  "rubyLsp.customRubyCommand": "/home/back2/.rbenv/shims/ruby",
+  "rubyLsp.rubyVersionManager": "custom", // <-- 後続の設定があるのでカンマを追加
+
+  // 新たにスペルチェックを無効化する設定を追加
+  "cSpell.enabled": false // <-- ファイルの最後の項目なのでカンマは不要
 }
