@@ -1,0 +1,26 @@
+<%= form_with(model: @checklist, local: true) do |form| %>
+  <% if @checklist.errors.any? %>
+    <div id="error_explanation" class="alert">
+      <h2><%= pluralize(@checklist.errors.count, "error") %> prevented this checklist from being saved:</h2>
+      <ul class="error-list">
+        <% @checklist.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :content, "質問内容" %><br>
+    <%= form.text_area :content, rows: 4 %>
+  </div>
+
+  <div>
+    <%= form.label :question_type, "質問タイプ" %><br>
+    <%= form.select :question_type, [["自由記述", "free_text"], ["はい/いいえ", "yes_no"], ["数値", "numeric"]], { selected: @checklist.question_type || "free_text" } %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

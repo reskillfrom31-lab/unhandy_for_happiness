@@ -1,0 +1,319 @@
+<div class="container">
+  <h1>unhandy for happiness</h1>
+
+<div id="checklist-container">
+    <% if @checklists.count < 5 %>
+      <p class="warning">
+        このアプリを機能させるには、最低5個の質問文をご自身で作成してください。
+        <br>質問文は自由記述、はい/いいえ、数値の3種類で作成できます。
+        <br>現在 <%= @checklists.count %>個です。
+      </p>
+    <% else %>
+      <div id="question-display" class="hidden">
+        <p id="question-text"></p>
+        <div id="confirmation-area" class="hidden">
+          <label>
+            <input type="checkbox" id="confirm-checkbox">
+            この文章を確認しました
+          </label>
+        </div>
+        <div id="answer-area" class="hidden">
+          <div id="free-text-input" class="answer-input hidden">
+            <label for="answer-text">回答（自由記述）:</label>
+            <textarea id="answer-text" rows="4" placeholder="回答を入力してください"></textarea>
+          </div>
+          <div id="yes-no-input" class="answer-input hidden">
+            <label for="answer-select">回答:</label>
+            <select id="answer-select">
+              <option value="">選択してください</option>
+              <option value="はい">はい</option>
+              <option value="いいえ">いいえ</option>
+            </select>
+          </div>
+          <div id="numeric-input" class="answer-input hidden">
+            <label for="answer-number">回答（数値）:</label>
+            <input type="number" id="answer-number" placeholder="数値を入力してください">
+          </div>
+          <button id="save-answer-button" class="hidden">回答を保存</button>
+        </div>
+        <button id="next-button" class="hidden">次の質問に進む</button>
+      </div>
+      <div id="summary-display" class="hidden">
+        <h2>回答した質問一覧</h2>
+        <ul id="summary-list"></ul>
+        <button type="button" id="youtube-link" class="hidden">youtubeを閲覧する</button>
+      </div>
+      <button id="start-button">チェックリストを開始する</button>
+    <% end %>
+  </div>
+
+  <hr>
+  <h2>質問の管理</h2>
+  <%# 新規作成フォーム %>
+  <h3>新しい質問を追加</h3>
+  <%= form_with(model: @checklist, url: checklists_path, local: true) do |form| %>
+    <div>
+      <%= form.label :content, "質問内容" %><br>
+      <%= form.text_area :content, rows: 2 %>
+    </div>
+    <div>
+      <%= form.label :question_type, "質問タイプ" %><br>
+      <%= form.select :question_type, [["自由記述", "free_text"], ["はい/いいえ", "yes_no"], ["数値", "numeric"]], { selected: "free_text" } %>
+    </div>
+    <div>
+      <%= form.submit "質問を追加" %>
+    </div>
+  <% end %>
+
+<%# 既存の質問一覧 %>
+  <h3>登録済みの質問一覧 (<%= @checklists.count %>/20)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>質問内容</th>
+        <th colspan="2"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @checklists.each do |checklist| %>
+        <tr>
+          <td><%= checklist.content %></td>
+          <td><%= link_to '編集', edit_checklist_path(checklist) %></td>
+          <td><%= link_to '削除', checklist_path(checklist), data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+<%# JavaScript %>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const startButton = document.getElementById('start-button');
+      if (!startButton) return;
+
+      const checklists = <%= @checklists.map { |c| { id: c.id, content: c.content, question_type: c.question_type } }.to_json.html_safe %>;
+      let currentIndex = 0;
+
+      const questionDisplay = document.getElementById('question-display');
+      const questionText = document.getElementById('question-text');
+      const confirmationArea = document.getElementById('confirmation-area');
+      const confirmCheckbox = document.getElementById('confirm-checkbox');
+      const nextButton = document.getElementById('next-button');
+
+      const summaryDisplay = document.getElementById('summary-display');
+      const summaryList = document.getElementById('summary-list');
+      const youtubeLink = document.getElementById('youtube-link');
+      const saveAnswerButton = document.getElementById('save-answer-button');
+      const answerArea = document.getElementById('answer-area');
+      // デバッグ用（後で削除可能）
+      if (!youtubeLink) {
+        console.error('youtube-link要素が見つかりません');
+      }
+
+      function showQuestion(index) {
+        // UIリセット
+        questionDisplay.classList.remove('hidden');
+        confirmationArea.classList.add('hidden');
+        confirmCheckbox.checked = false;
+        nextButton.classList.add('hidden');
+
+      // 質問表示
+      questionText.textContent = `質問${index + 1}: ${checklists[index].content}`;
+
+      // 5秒後に確認チェックボックス表示
+      setTimeout(() => {
+        confirmationArea.classList.remove('hidden');
+      }, 5000);
+    }
+
+      startButton.addEventListener('click', () => {
+        startButton.classList.add('hidden');
+        showQuestion(currentIndex);
+      });
+
+      confirmCheckbox.addEventListener('change', () => {
+      if (confirmCheckbox.checked) {
+        // 質問タイプに応じた入力フォームを表示
+        const currentQuestion = checklists[currentIndex];
+        const freeTextInput = document.getElementById('free-text-input');
+        const yesNoInput = document.getElementById('yes-no-input');
+        const numericInput = document.getElementById('numeric-input');
+ 
+        // すべての入力フォームを非表示にする
+        freeTextInput.classList.add('hidden');
+        yesNoInput.classList.add('hidden');
+        numericInput.classList.add('hidden');
+        saveAnswerButton.classList.add('hidden');
+        
+        // 質問タイプに応じた入力フォームを表示
+        answerArea.classList.remove('hidden');
+        
+        if (currentQuestion.question_type === 'free_text') {
+          freeTextInput.classList.remove('hidden');
+        } else if (currentQuestion.question_type === 'yes_no') {
+          yesNoInput.classList.remove('hidden');
+        } else if (currentQuestion.question_type === 'numeric') {
+          numericInput.classList.remove('hidden');
+        }
+        
+        saveAnswerButton.classList.remove('hidden');
+      } else {
+        // チェックを外したら入力フォームを非表示
+        document.getElementById('answer-area').classList.add('hidden');
+      }
+    });
+    saveAnswerButton.addEventListener('click', async () => {
+      const currentQuestion = checklists[currentIndex];
+      let answerContent = '';
+      
+      // 質問タイプに応じて回答内容を取得
+      if (currentQuestion.question_type === 'free_text') {
+        answerContent = document.getElementById('answer-text').value;
+      } else if (currentQuestion.question_type === 'yes_no') {
+        answerContent = document.getElementById('answer-select').value;
+      } else if (currentQuestion.question_type === 'numeric') {
+        answerContent = document.getElementById('answer-number').value;
+      }
+      
+      if (!answerContent) {
+        alert('回答を入力してください');
+        return;
+      }
+      
+      // サーバーに回答を送信
+      try {
+        const response = await fetch(`/checklists/${currentQuestion.id}/create_answer`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({
+            content: answerContent
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          // 回答済みリストに追加
+          const li = document.createElement('li');
+          li.textContent = `${currentQuestion.content} - 回答: ${answerContent}`;
+          summaryList.appendChild(li);
+          
+          // 入力フォームをリセット
+          document.getElementById('answer-text').value = '';
+          document.getElementById('answer-select').value = '';
+          document.getElementById('answer-number').value = '';
+          answerArea.classList.add('hidden');
+          
+          // 全ての質問に回答したかどうかを確認
+          if (data.all_answered && currentIndex === checklists.length - 1) {
+            // 最後の質問に回答し、全ての質問に回答済みの場合
+            questionDisplay.classList.add('hidden');
+            summaryDisplay.classList.remove('hidden');
+
+            // 10秒後にYouTubeリンク表示
+            setTimeout(() => {
+              youtubeLink.classList.remove('hidden');
+            }, 10000);
+          } else {
+            // 次の質問に進む処理を実行
+            nextButton.click();
+          }
+        } else {
+          alert('回答の保存に失敗しました: ' + data.errors.join(', '));
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('回答の保存中にエラーが発生しました');
+      }
+    });
+
+      nextButton.addEventListener('click', async () => {
+        currentIndex++;
+        if (currentIndex < checklists.length) {
+          // 次の質問を表示
+          showQuestion(currentIndex);
+        } else {
+          // 全ての質問を表示したので、全ての質問に回答したかどうかを確認
+          try {
+            const response = await fetch('/checklists/check_all_answered', {
+              method: 'GET',
+              headers: {
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+              }
+            });
+            
+            const data = await response.json();
+            if (data.all_answered) {
+              // 全ての質問に回答済みの場合のみ終了処理
+              questionDisplay.classList.add('hidden');
+              summaryDisplay.classList.remove('hidden');
+
+              // 10秒後にYouTubeリンク表示
+              setTimeout(() => {
+                youtubeLink.classList.remove('hidden');
+              }, 10000);
+            } else {
+              // まだ回答していない質問がある場合は、最初に戻る
+              alert('全ての質問に回答してください。');
+              currentIndex = 0;
+              showQuestion(currentIndex);
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alert('回答状況の確認中にエラーが発生しました');
+          }
+        }
+      });
+      // YouTubeボタンのクリックイベント（buttonタグなのでTurboの影響を受けない）
+      if (youtubeLink) {
+        youtubeLink.addEventListener('click', async function(e) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          
+          // 全ての質問に回答したかどうかを確認
+          try {
+            const response = await fetch('/checklists/check_all_answered', {
+              method: 'GET',
+              headers: {
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+              }
+            });
+            
+            const data = await response.json();
+            if (!data.all_answered) {
+              alert('全ての質問に回答してください。');
+              return false;
+            }
+            
+            // 全ての質問に回答済みの場合のみ、拡張機能のリダイレクトをスキップするために、allow_access=trueパラメータを追加
+            const youtubeUrl = 'https://www.youtube.com?allow_access=true';
+            
+            // ポップアップブロッカー対策：直接のクリックイベントから呼び出す
+            const youtubeWindow = window.open(youtubeUrl, '_blank', 'noopener,noreferrer');
+            
+            // ポップアップがブロックされた場合のフォールバック
+            if (!youtubeWindow || youtubeWindow.closed || typeof youtubeWindow.closed === 'undefined') {
+              // ポップアップがブロックされた場合、同じタブで開く（ユーザーに通知）
+              if (confirm('ポップアップがブロックされました。同じタブでYouTubeを開きますか？')) {
+                window.location.href = youtubeUrl;
+              }
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alert('回答状況の確認中にエラーが発生しました');
+          }
+          
+          return false;
+        }, true); // capture: trueでTurboより先に処理
+        
+        // 念のため、mousedownイベントでも処理（より早い段階で処理）
+        youtubeLink.addEventListener('mousedown', function(e) {
+          e.stopImmediatePropagation();
+        }, true);
+      }
+    });
+  </script>
+</div>

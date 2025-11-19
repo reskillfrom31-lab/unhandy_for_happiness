@@ -1,0 +1,187 @@
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unhandy for Happiness - 拡張機能設定ガイド</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 20px;
+      background-color: #f9f9f9;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .step {
+      margin-bottom: 2em;
+    }
+    .code-block {
+      position: relative;
+      background-color: #2d2d2d;
+      color: #f1f1f1;
+      padding: 20px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      font-size: 0.9em;
+    }
+    .code-block pre {
+      margin: 0;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #7f8c8d;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8em;
+      transition: background-color 0.2s;
+    }
+    .copy-btn:hover {
+      background-color: #95a5a6;
+    }
+    .copy-btn.copied {
+      background-color: #27ae60;
+    }
+    code {
+      font-family: inherit;
+    }
+    li {
+      margin-bottom: 0.5em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Unhandy for Happiness 拡張機能設定ガイド</h1>
+    <p>このガイドに従って、YouTubeやInstagramへのアクセスを管理するブラウザ拡張機能を手動で設定します。</p>
+
+    <div class="step">
+      <h2>ステップ1: 拡張機能用のフォルダを作成する</h2>
+      <p>お使いのコンピュータの分かりやすい場所（例: デスクトップ）に、<code>unhandy_redirector</code> という名前で新しいフォルダを1つ作成してください。</p>
+    </div>
+
+    <div class="step">
+      <h2>ステップ2: <code>manifest.json</code> ファイルを作成する</h2>
+      <p>先ほど作成した <code>unhandy_redirector</code> フォルダの中に、<code>manifest.json</code> という名前で新しいファイルを作成し、以下のコードを正確にコピー＆ペーストして保存してください。</p>
+      
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">コピー</button>
+        <pre><code id="manifest-code">{
+  "manifest_version": 3,
+  "name": "Unhandy for Happiness Redirector",
+  "version": "1.0",
+  "description": "YouTubeとInstagramへのアクセスを unhandy_for_happiness アプリにリダイレクトします。",
+  "permissions": [
+    "tabs",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://*.instagram.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <h2>ステップ3: <code>background.js</code> ファイルを作成する</h2>
+      <p>同じく <code>unhandy_redirector</code> フォルダの中に、<code>background.js</code> という名前で新しいファイルを作成し、以下のコードを正確にコピー＆ペーストして保存してください。</p>
+      
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">コピー</button>
+        <pre><code id="background-code">// リダイレクト先のURL
+// 開発中は 'http://localhost:3000'
+// 本番環境にデプロイしたら、そのURLに変更してください (例: 'https://www.unhandy-for-happiness.com')
+const redirectUrl = "http://localhost:3000";
+const targetSites = ["youtube.com", "instagram.com"];
+
+// webNavigation APIを使用して、ナビゲーション開始前にURLをチェック
+chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+  // メインフレーム（トップレベルのナビゲーション）のみを処理
+  if (details.frameId !== 0) {
+    return;
+  }
+
+  const url = details.url;
+  
+  // URLが存在し、httpまたはhttpsで始まる場合
+  if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+    // ターゲットサイトのいずれかを含んでいるかチェック
+    const isTargetSite = targetSites.some(site => url.includes(site));
+
+    if (isTargetSite && !url.startsWith(redirectUrl)) {
+      // URLに 'allow_access=true' パラメータが含まれている場合はリダイレクトをスキップ
+      // これはチェックリスト完了後のYouTubeアクセスを許可するため
+      try {
+        const urlObj = new URL(url);
+        const allowAccess = urlObj.searchParams.get('allow_access') === 'true';
+
+        if (!allowAccess) {
+          // 無限ループを防ぎつつ、リダイレクトを実行
+          chrome.tabs.update(details.tabId, { url: redirectUrl });
+        }
+      } catch (e) {
+        // URLのパースに失敗した場合もリダイレクト（安全のため）
+        chrome.tabs.update(details.tabId, { url: redirectUrl });
+      }
+    }
+  }
+}, {
+  url: [
+    { hostContains: 'youtube.com' },
+    { hostContains: 'instagram.com' }
+  ]
+});</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <h2>ステップ4: ブラウザに拡張機能をインストールする</h2>
+      <ol>
+        <li>お使いのブラウザ（Chromeなど）で、アドレスバーに <code>chrome://extensions</code> と入力して拡張機能管理ページを開きます。</li>
+        <li>ページの右上にある「<strong>デベロッパーモード</strong>」をオンにします。</li>
+        <li>「<strong>パッケージ化されていない拡張機能を読み込む</strong>」というボタンが表示されるので、それをクリックします。</li>
+        <li>ファイル選択画面が開くので、ステップ1で作成した <code>unhandy_redirector</code> フォルダを選択します。</li>
+        <li>拡張機能が一覧に表示されれば、インストールは完了です。</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(button) {
+      const codeBlock = button.nextElementSibling;
+      const code = codeBlock.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        button.textContent = 'コピー完了!';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = 'コピー';
+          button.classList.remove('copied');
+        }, 2000);
+      }).catch(err => {
+        console.error('コピーに失敗しました', err);
+      });
+    }
+  </script>
+
+</body>
+</html>

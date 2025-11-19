@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Unhandy for Happiness Redirector",
+  "version": "1.0",
+  "description": "YouTubeとInstagramへのアクセスを unhandy_for_happiness アプリにリダイレクトします。",
+  "permissions": [
+    "tabs",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://*.instagram.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
