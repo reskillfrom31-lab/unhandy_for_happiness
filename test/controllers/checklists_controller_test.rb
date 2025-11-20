@@ -142,4 +142,13 @@ class ChecklistsControllerTest < ActionDispatch::IntegrationTest
     get edit_checklist_path(other_checklist)
     assert_response :not_found
   end
+
+  test "should display navbar with logout button when authenticated" do
+    get checklists_path
+    assert_response :success
+    assert_match /ログアウト/, response.body
+    assert_match /navbar/, response.body
+    assert_no_match /新規登録/, response.body
+    assert_no_match /ログイン/, response.body
+  end
 end

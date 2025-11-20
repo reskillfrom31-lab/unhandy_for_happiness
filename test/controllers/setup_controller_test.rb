@@ -26,4 +26,23 @@ class SetupControllerTest < ActionDispatch::IntegrationTest
     assert_match /unhandy_redirector/, response.body
     assert_match /アカウントの作成/, response.body
   end
+
+  test "should display navbar with sign up and login buttons when not authenticated" do
+    get root_path
+    assert_response :success
+    assert_match /新規登録/, response.body
+    assert_match /ログイン/, response.body
+    assert_match /navbar/, response.body
+  end
+
+  test "should display navbar with logout button when authenticated" do
+    user = users(:one)
+    sign_in user
+    get root_path
+    assert_response :success
+    assert_match /ログアウト/, response.body
+    assert_match /navbar/, response.body
+    assert_no_match /新規登録/, response.body
+    assert_no_match /ログイン/, response.body
+  end
 end
