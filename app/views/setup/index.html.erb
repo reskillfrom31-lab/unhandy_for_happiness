@@ -1,14 +1,11 @@
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Unhandy for Happiness - 拡張機能設定ガイド</title>
-  <style>
+<% content_for :title, "Unhandy for Happiness - 事前準備ガイド" %>
+
+<style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       line-height: 1.6;
       color: #333;
-      max-width: 800px;
+      max-width: 900px;
       margin: 20px auto;
       padding: 0 20px;
       background-color: #f9f9f9;
@@ -16,14 +13,49 @@
     h1, h2, h3 {
       color: #2c3e50;
     }
+    h1 {
+      border-bottom: 3px solid #3498db;
+      padding-bottom: 10px;
+    }
     .container {
       background-color: #fff;
       padding: 30px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .intro {
+      background-color: #e8f4f8;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 30px;
+      border-left: 4px solid #3498db;
+    }
+    .step-section {
+      margin-bottom: 3em;
+      padding: 20px;
+      background-color: #fafafa;
+      border-radius: 5px;
+      border-left: 4px solid #27ae60;
+    }
+    .step-section h2 {
+      margin-top: 0;
+      color: #27ae60;
     }
     .step {
       margin-bottom: 2em;
+    }
+    .step-number {
+      display: inline-block;
+      background-color: #27ae60;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      font-weight: bold;
+      margin-right: 10px;
     }
     .code-block {
       position: relative;
@@ -34,6 +66,7 @@
       overflow-x: auto;
       font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
       font-size: 0.9em;
+      margin: 15px 0;
     }
     .code-block pre {
       margin: 0;
@@ -63,26 +96,106 @@
     li {
       margin-bottom: 0.5em;
     }
+    .action-button {
+      display: inline-block;
+      background-color: #3498db;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      margin: 10px 5px;
+      transition: background-color 0.2s;
+    }
+    .action-button:hover {
+      background-color: #2980b9;
+    }
+    .action-button.secondary {
+      background-color: #95a5a6;
+    }
+    .action-button.secondary:hover {
+      background-color: #7f8c8d;
+    }
+    .note {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .skip-note {
+      background-color: #d1ecf1;
+      border-left: 4px solid #17a2b8;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .next-steps {
+      background-color: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 20px;
+      margin: 30px 0;
+      border-radius: 4px;
+    }
+    .next-steps h3 {
+      margin-top: 0;
+      color: #28a745;
+    }
   </style>
-</head>
-<body>
 
-  <div class="container">
-    <h1>Unhandy for Happiness 拡張機能設定ガイド</h1>
-    <p>このガイドに従って、YouTubeやInstagramへのアクセスを管理するブラウザ拡張機能を手動で設定します。</p>
-
-    <div class="step">
-      <h2>ステップ1: 拡張機能用のフォルダを作成する</h2>
-      <p>お使いのコンピュータの分かりやすい場所（例: デスクトップ）に、<code>unhandy_redirector</code> という名前で新しいフォルダを1つ作成してください。</p>
+<div class="container">
+    <h1>Unhandy for Happiness 事前準備ガイド</h1>
+    
+    <div class="intro">
+      <p><strong>ようこそ！</strong> Unhandy for Happinessをご利用いただくには、以下の3つの事前準備が必要です。順番に進めていきましょう。</p>
+      <p>このガイドは、Googleアカウントがなくても、拡張機能がまだ作成されていなくても、アカウントにログインしていなくても、誰でも閲覧できます。</p>
     </div>
 
-    <div class="step">
-      <h2>ステップ2: <code>manifest.json</code> ファイルを作成する</h2>
-      <p>先ほど作成した <code>unhandy_redirector</code> フォルダの中に、<code>manifest.json</code> という名前で新しいファイルを作成し、以下のコードを正確にコピー＆ペーストして保存してください。</p>
+    <!-- ①Googleアカウントの作成 -->
+    <div class="step-section">
+      <h2><span class="step-number">①</span>Googleアカウントの作成</h2>
       
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">コピー</button>
-        <pre><code id="manifest-code">{
+      <div class="step">
+        <h3>なぜGoogleアカウントが必要ですか？</h3>
+        <p>ブラウザ拡張機能（unhandy_redirector）を有効にするためには、Googleアカウントでブラウザにログインしている必要があります。拡張機能をインストール・有効化する操作は、ログインした状態でないと行えません。</p>
+      </div>
+
+      <div class="step">
+        <h3>Googleアカウントの作成手順</h3>
+        <ol>
+          <li><a href="https://accounts.google.com/signup" target="_blank" rel="noopener noreferrer">Googleアカウント作成ページ</a>にアクセスします</li>
+          <li>必要な情報（名前、メールアドレス、パスワードなど）を入力します</li>
+          <li>アカウントを作成したら、ブラウザ（Chromeなど）にログインします</li>
+        </ol>
+      </div>
+
+      <div class="skip-note">
+        <strong>既にGoogleアカウントをお持ちの場合</strong><br>
+        このステップはスキップして、次のステップ②に進んでください。
+      </div>
+    </div>
+
+    <!-- ②unhandy_redirectorの作成 -->
+    <div class="step-section">
+      <h2><span class="step-number">②</span>unhandy_redirectorの作成</h2>
+      
+      <div class="step">
+        <h3>なぜunhandy_redirectorが必要ですか？</h3>
+        <p>unhandy_redirectorは、YouTubeやInstagramへのアクセスを自動的にこのアプリにリダイレクトするブラウザ拡張機能です。この拡張機能を正確に作成・保存しなければ、Unhandy for Happinessアプリを利用できません。</p>
+      </div>
+
+      <div class="step">
+        <h3>ステップ1: 拡張機能用のフォルダを作成する</h3>
+        <p>お使いのコンピュータの分かりやすい場所（例: デスクトップ）に、<code>unhandy_redirector</code> という名前で新しいフォルダを1つ作成してください。</p>
+      </div>
+
+      <div class="step">
+        <h3>ステップ2: <code>manifest.json</code> ファイルを作成する</h3>
+        <p>先ほど作成した <code>unhandy_redirector</code> フォルダの中に、<code>manifest.json</code> という名前で新しいファイルを作成し、以下のコードを正確にコピー＆ペーストして保存してください。</p>
+        
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">コピー</button>
+          <pre><code id="manifest-code">{
   "manifest_version": 3,
   "name": "Unhandy for Happiness Redirector",
   "version": "1.0",
@@ -99,16 +212,24 @@
     "service_worker": "background.js"
   }
 }</code></pre>
+        </div>
       </div>
-    </div>
 
-    <div class="step">
-      <h2>ステップ3: <code>background.js</code> ファイルを作成する</h2>
-      <p>同じく <code>unhandy_redirector</code> フォルダの中に、<code>background.js</code> という名前で新しいファイルを作成し、以下のコードを正確にコピー＆ペーストして保存してください。</p>
-      
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">コピー</button>
-        <pre><code id="background-code">// リダイレクト先のURL
+      <div class="step">
+        <h3>ステップ3: <code>background.js</code> ファイルを作成する</h3>
+        <p>同じく <code>unhandy_redirector</code> フォルダの中に、<code>background.js</code> という名前で新しいファイルを作成し、以下のコードを正確にコピー＆ペーストして保存してください。</p>
+        
+        <div class="note">
+          <strong>重要:</strong> コード内の <code>redirectUrl</code> の値を確認してください。
+          <ul>
+            <li>開発中（ローカルでテストする場合）: <code>"http://localhost:3000"</code></li>
+            <li>本番環境にデプロイしたら: そのURLに変更してください（例: <code>"https://www.unhandy-for-happiness.com"</code>）</li>
+          </ul>
+        </div>
+        
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">コピー</button>
+          <pre><code id="background-code">// リダイレクト先のURL
 // 開発中は 'http://localhost:3000'
 // 本番環境にデプロイしたら、そのURLに変更してください (例: 'https://www.unhandy-for-happiness.com')
 const redirectUrl = "http://localhost:3000";
@@ -151,18 +272,56 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
     { hostContains: 'instagram.com' }
   ]
 });</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <h3>ステップ4: ブラウザに拡張機能をインストールする</h3>
+        <ol>
+          <li>お使いのブラウザ（Chromeなど）で、アドレスバーに <code>chrome://extensions</code> と入力して拡張機能管理ページを開きます。</li>
+          <li>ページの右上にある「<strong>デベロッパーモード</strong>」をオンにします。</li>
+          <li>「<strong>パッケージ化されていない拡張機能を読み込む</strong>」というボタンが表示されるので、それをクリックします。</li>
+          <li>ファイル選択画面が開くので、ステップ1で作成した <code>unhandy_redirector</code> フォルダを選択します。</li>
+          <li>拡張機能が一覧に表示されれば、インストールは完了です。</li>
+        </ol>
       </div>
     </div>
 
-    <div class="step">
-      <h2>ステップ4: ブラウザに拡張機能をインストールする</h2>
-      <ol>
-        <li>お使いのブラウザ（Chromeなど）で、アドレスバーに <code>chrome://extensions</code> と入力して拡張機能管理ページを開きます。</li>
-        <li>ページの右上にある「<strong>デベロッパーモード</strong>」をオンにします。</li>
-        <li>「<strong>パッケージ化されていない拡張機能を読み込む</strong>」というボタンが表示されるので、それをクリックします。</li>
-        <li>ファイル選択画面が開くので、ステップ1で作成した <code>unhandy_redirector</code> フォルダを選択します。</li>
-        <li>拡張機能が一覧に表示されれば、インストールは完了です。</li>
-      </ol>
+    <!-- ③unhandy_for_happinessアカウントの作成 -->
+    <div class="step-section">
+      <h2><span class="step-number">③</span>unhandy_for_happinessアカウントの作成</h2>
+      
+      <div class="step">
+        <h3>なぜアカウントが必要ですか？</h3>
+        <p>アカウントを作成し、ログインしなければ質問項目を作成することができません。質問項目は、YouTubeやInstagramにアクセスしようとした際に表示されるチェックリストです。</p>
+      </div>
+
+      <div class="step">
+        <h3>アカウントの作成手順</h3>
+        <p>以下のボタンからユーザー登録ページにアクセスし、メールアドレスとパスワードを入力してアカウントを作成してください。</p>
+        <a href="<%= new_user_registration_path %>" class="action-button">新規ユーザー登録</a>
+        <div class="skip-note" style="margin-top: 15px;">
+          <strong>既にアカウントをお持ちの場合</strong><br>
+          <a href="<%= new_user_session_path %>" class="action-button secondary">ログイン</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 次のステップ -->
+    <div class="next-steps">
+      <h3>次のステップ: 質問項目の作成</h3>
+      <p>アカウントを作成してログインしたら、<strong>最低5個の質問項目</strong>を作成する必要があります。質問項目は、YouTubeやInstagramにアクセスしようとした際に表示されるチェックリストです。</p>
+      <p>質問項目は以下の3種類から選択できます：</p>
+      <ul>
+        <li><strong>自由記述</strong>: テキストで自由に回答</li>
+        <li><strong>はい/いいえ</strong>: 「はい」または「いいえ」で回答</li>
+        <li><strong>数値</strong>: 数値で回答</li>
+      </ul>
+      <% if user_signed_in? %>
+        <p><a href="<%= checklists_path %>" class="action-button">質問を作成する</a></p>
+      <% else %>
+        <p class="note">質問を作成するには、まず上記のステップ③でアカウントを作成してログインしてください。</p>
+      <% end %>
     </div>
   </div>
 
@@ -182,6 +341,4 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
       });
     }
   </script>
-
-</body>
-</html>
+</div>

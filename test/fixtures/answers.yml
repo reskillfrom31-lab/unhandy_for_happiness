@@ -1,0 +1,18 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  content: 今日はプログラミングの勉強をします
+  user: one
+  checklist: one
+
+two:
+  content: はい
+  user: one
+  checklist: two
+
+three:
+  content: 3
+  user: two
+  checklist: three
+
+

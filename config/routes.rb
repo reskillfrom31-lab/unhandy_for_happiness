@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Defines the root path route ("/")
-  root "checklists#index"
+  root "setup#index"
   resources :checklists do
     post 'create_answer', on: :member
     get 'check_all_answered', on: :collection

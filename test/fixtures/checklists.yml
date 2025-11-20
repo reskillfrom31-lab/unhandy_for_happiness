@@ -1,9 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  content: MyText
+  content: 今日の目標は何ですか？
+  question_type: free_text
   user: one
 
 two:
-  content: MyText
+  content: 集中して取り組めますか？
+  question_type: yes_no
+  user: one
+
+three:
+  content: 今日の学習時間は何時間ですか？
+  question_type: numeric
   user: two
