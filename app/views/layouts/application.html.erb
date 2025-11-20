@@ -8,9 +8,102 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <style>
+      .navbar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        padding: 15px 20px;
+        z-index: 1000;
+        background-color: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .navbar-buttons {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .navbar-button {
+        display: inline-block;
+        padding: 8px 16px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background-color 0.2s, color 0.2s;
+        border: 1px solid transparent;
+      }
+      .navbar-button.primary {
+        background-color: #3498db;
+        color: white;
+      }
+      .navbar-button.primary:hover {
+        background-color: #2980b9;
+      }
+      .navbar-button.secondary {
+        background-color: #95a5a6;
+        color: white;
+      }
+      .navbar-button.secondary:hover {
+        background-color: #7f8c8d;
+      }
+      .navbar-button.danger {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      .navbar-button.danger:hover {
+        background-color: #c0392b;
+      }
+      .navbar-button form {
+        display: inline;
+        margin: 0;
+      }
+      .navbar-button form button {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .navbar-button form button:hover {
+        background-color: #c0392b;
+      }
+      body {
+        padding-top: 60px;
+      }
+      @media (max-width: 768px) {
+        .navbar {
+          padding: 10px 15px;
+        }
+        .navbar-button {
+          padding: 6px 12px;
+          font-size: 12px;
+        }
+        body {
+          padding-top: 50px;
+        }
+      }
+    </style>
   </head>
 
   <body>
+    <nav class="navbar">
+      <div class="navbar-buttons">
+        <% if user_signed_in? %>
+          <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "navbar-button danger" %>
+        <% else %>
+          <%= link_to "新規登録", new_user_registration_path, class: "navbar-button primary" %>
+          <%= link_to "ログイン", new_user_session_path, class: "navbar-button secondary" %>
+        <% end %>
+      </div>
+    </nav>
+
     <% if notice %>
       <p class="notice"><%= notice %></p>
     <% end %>
