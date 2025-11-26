@@ -10,6 +10,16 @@ class ChecklistsController < ApplicationController
 
   def new
   end
+  
+  def create
+    @checklist = current_user.checklists.new(checklist_params)
+    if @checklist.save
+      redirect_to checklists_path, notice: '質問が追加されました。'
+    else
+      @checklists = current_user.checklists.order(created_at: :asc)
+      render :index, status: :unprocessable_entity
+    end
+  end
 
   def create_answer
     @checklist = current_user.checklists.find(params[:id])  # checklist_id → id に変更

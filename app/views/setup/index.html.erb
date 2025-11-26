@@ -300,10 +300,12 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
         <h3>アカウントの作成手順</h3>
         <p>以下のボタンからユーザー登録ページにアクセスし、メールアドレスとパスワードを入力してアカウントを作成してください。</p>
         <a href="<%= new_user_registration_path %>" class="action-button">新規ユーザー登録</a>
-        <div class="skip-note" style="margin-top: 15px;">
-          <strong>既にアカウントをお持ちの場合</strong><br>
-          <a href="<%= new_user_session_path %>" class="action-button secondary">ログイン</a>
-        </div>
+        <% unless user_signed_in? %>
+          <div class="skip-note" style="margin-top: 15px;">
+            <strong>既にアカウントをお持ちの場合</strong><br>
+            <a href="<%= new_user_session_path %>" class="action-button secondary">ログイン</a>
+          </div>
+        <% end %>
       </div>
     </div>
 
