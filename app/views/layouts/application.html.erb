@@ -9,14 +9,24 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <style>
-      .navbar {
+      header {
         position: fixed;
         top: 0;
+        left: 0;
         right: 0;
-        padding: 15px 20px;
-        z-index: 1000;
+        width: 100%;
         background-color: rgba(255, 255, 255, 0.95);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 15px 20px;
+        height: 60px;
+      }
+      .navbar {
+        display: flex;
+        align-items: center;
       }
       .navbar-buttons {
         display: flex;
@@ -75,41 +85,52 @@
         background-color: #c0392b;
       }
       body {
+        margin: 0;
+        padding: 0;
+      }
+      .main-content {
         padding-top: 60px;
+        min-height: calc(100vh - 60px);
       }
       @media (max-width: 768px) {
-        .navbar {
+        header {
           padding: 10px 15px;
+          height: 50px;
         }
         .navbar-button {
           padding: 6px 12px;
           font-size: 12px;
         }
-        body {
+        .main-content {
           padding-top: 50px;
+          min-height: calc(100vh - 50px);
         }
       }
     </style>
   </head>
 
   <body>
-    <nav class="navbar">
-      <div class="navbar-buttons">
-        <% if user_signed_in? %>
-          <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "navbar-button danger" %>
-        <% else %>
-          <%= link_to "新規登録", new_user_registration_path, class: "navbar-button primary" %>
-          <%= link_to "ログイン", new_user_session_path, class: "navbar-button secondary" %>
-        <% end %>
-      </div>
-    </nav>
+    <header>
+      <nav class="navbar">
+        <div class="navbar-buttons">
+          <% if user_signed_in? %>
+            <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "navbar-button danger" %>
+          <% else %>
+            <%= link_to "新規登録", new_user_registration_path, class: "navbar-button primary" %>
+            <%= link_to "ログイン", new_user_session_path, class: "navbar-button secondary" %>
+          <% end %>
+        </div>
+      </nav>
+    </header>
 
-    <% if notice %>
-      <p class="notice"><%= notice %></p>
-    <% end %>
-    <% if alert %>
-      <p class="alert"><%= alert %></p>
-    <% end %>
-    <%= yield %>
+    <div class="main-content">
+      <% if notice %>
+        <p class="notice"><%= notice %></p>
+      <% end %>
+      <% if alert %>
+        <p class="alert"><%= alert %></p>
+      <% end %>
+      <%= yield %>
+    </div>
   </body>
 </html>

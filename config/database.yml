@@ -51,5 +51,5 @@ test:
 production:
   <<: *default
   database: unhandy_for_happiness_production
-  username: unhandy_for_happiness
+  username: <%= ENV.fetch("UNHANDY_FOR_HAPPINESS_DATABASE_USERNAME", "unhandy_for_happiness") %>
   password: <%= ENV["UNHANDY_FOR_HAPPINESS_DATABASE_PASSWORD"] %>
