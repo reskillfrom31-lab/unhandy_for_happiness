@@ -49,9 +49,11 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  <<: *default
+  adapter: mysql2
+  encoding: utf8
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   database: unhandy_for_happiness_production
   username: <%= ENV.fetch("UNHANDY_FOR_HAPPINESS_DATABASE_USERNAME", "unhandy_for_happiness") %>
   password: <%= ENV["UNHANDY_FOR_HAPPINESS_DATABASE_PASSWORD"] %>
-  host: localhost
+  host: 127.0.0.1
   port: 3306

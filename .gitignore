@@ -34,3 +34,9 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 **/.DS_Store
+
+# Ignore backup files
+*.backup
+
+# Ignore build logs
+build.log
