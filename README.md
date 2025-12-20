@@ -139,6 +139,58 @@ SNSや動画サイトへの依存に悩む方を支援するWebアプリケー�
 
 ---
 
+## 📚 デプロイで学んだこと
+
+このプロジェクトでは、初めてのAWS EC2へのデプロイに挑戦しました。その過程で多くのエラーに遭遇しましたが、それぞれが貴重な学びとなりました。
+
+### 遭遇した主なエラーと解決
+
+#### 1. SSH接続タイムアウト
+**問題**: Wi-Fi変更により自分のIPアドレスが変わり、EC2に接続できなくなった  
+**学び**: 動的IPアドレスの理解、AWSセキュリティグループの設定方法
+
+#### 2. ファイル実行権限エラー
+**問題**: `bin/docker-entrypoint`に実行権限がなくコンテナが起動しない  
+**学び**: Linuxのパーミッション（chmod）、Dockerイメージはビルド時の状態を含む
+
+#### 3. SECRET_KEY_BASE不足
+**問題**: 本番環境でRailsの秘密鍵が設定されていない  
+**学び**: 開発環境と本番環境の設定の違い、環境変数での機密情報管理
+
+#### 4. データベース認証エラー（最も難解）
+**問題**: MySQL 8.0の認証方式とRailsの互換性問題  
+**学び**: バージョン間の互換性の重要性、`mysql_native_password`と`caching_sha2_password`の違い
+
+#### 5. パスワードポリシー違反
+**問題**: 単純なパスワードがMySQLのセキュリティポリシーで拒否された  
+**学び**: 本番環境でのセキュリティ要件、強固なパスワードの必要性
+
+### 習得したスキル
+
+**技術面**
+- Dockerの実践的な使用（イメージビルド、コンテナ管理、環境変数）
+- Linuxサーバー管理（SSH接続、ファイル権限、systemctl）
+- MySQLのユーザー管理と認証方式の理解
+- AWS EC2とセキュリティグループの基本操作
+
+**問題解決面**
+- **層別思考**: 問題をネットワーク層・コンテナ層・アプリケーション層・DB層に分けて切り分ける
+- **ログの活用**: `docker logs`で必ず原因を確認する習慣
+- **「なぜ？」を大切にする**: 動いたからOKではなく、なぜ動いたのか理解する
+- **ドキュメント化**: エラーと解決方法を記録し、次回に活かす
+
+### 詳細なデプロイストーリー
+
+デプロイの詳細な記録は、`docs/private/DEPLOYMENT_STORY.md`に記載しています。  
+面接での技術説明の参考として、以下の内容を含んでいます：
+
+- 各エラーの詳細な原因分析
+- 思考プロセスと解決手順
+- 学んだ技術的知識
+- 今後の改善計画
+
+---
+
 ## 🚀 今後の改善点
 
 ### セキュリティ
@@ -215,6 +267,187 @@ http://localhost:3000
 ## 🚢 デプロイ方法
 
 ### AWS EC2へのデプロイ手順
+
+デプロイは**6つのPhase**に分けて進めます。各Phaseにチェックリストがあり、確実にデプロイできるようになっています。
+
+詳細なチェックリストは`docs/private/DEPLOYMENT_NOTES.md`を参照してください。
+
+---
+
+### Phase 0: デプロイ前の準備
+
+#### ローカル環境でのコード準備
+```bash
+# セキュリティチェック（最重要）
+cat .gitignore | grep -E "\.env|docs/private|master.key"
+# 上記3つが除外されていることを確認
+
+# GitHubにPush
+git add .
+git commit -m "デプロイ準備完了"
+git push origin main
+```
+
+#### サーバーの準備確認
+- EC2インスタンスが「running」状態
+- セキュリティグループでHTTP（ポート3000）とSSH（ポート22）を開放
+- 現在のIPアドレスを確認（`curl ifconfig.me`）
+
+#### データベースの準備確認
+- MySQLが起動している
+- データベース、ユーザー、権限が設定済み
+- 認証方式が`mysql_native_password`
+
+---
+
+### Phase 1: サーバーへの接続
+
+```bash
+# 現在のIPアドレスを確認
+curl ifconfig.me
+
+# 必要に応じてAWSセキュリティグループのSSHルールを更新
+
+# SSH接続
+ssh -i ~/.ssh/your-key.pem ubuntu@<EC2-IP>
+```
+
+---
+
+### Phase 2: コードの取得と準備
+
+```bash
+# アプリディレクトリに移動
+cd ~/apps/unhandy_for_happiness
+
+# 最新コードを取得
+git pull origin main
+
+# 実行権限を確認・付与
+ls -la bin/docker-entrypoint
+chmod +x bin/docker-entrypoint
+```
+
+---
+
+### Phase 3: Dockerイメージのビルド
+
+```bash
+# ディスク容量を確認
+df -h
+
+# イメージをビルド
+docker build -t unhandy-for-happiness:latest .
+
+# ビルド成功を確認
+docker images | grep unhandy-for-happiness
+```
+
+---
+
+### Phase 4: コンテナの起動
+
+```bash
+# 既存コンテナを削除
+docker rm -f unhandy-for-happiness
+
+# 環境変数を準備（SECRETS.mdを参照）
+# 新しいコンテナを起動
+docker run -d \
+  --name unhandy-for-happiness \
+  --network host \
+  --restart always \
+  -e RAILS_ENV=production \
+  -e SECRET_KEY_BASE=<SECRETS.mdから> \
+  -e UNHANDY_FOR_HAPPINESS_DATABASE_PASSWORD='<SECRETS.mdから>' \
+  unhandy-for-happiness:latest
+```
+
+---
+
+### Phase 5: 動作確認
+
+```bash
+# コンテナが起動しているか確認
+docker ps
+
+# ログを確認
+docker logs -f unhandy-for-happiness
+# "Listening on tcp://0.0.0.0:3000" が表示されればOK
+# Ctrl+C で終了
+
+# ブラウザでアクセス
+# http://<EC2-IP>:3000
+```
+
+---
+
+### Phase 6: トラブルシューティング（5段階）
+
+エラーが発生した場合、以下の順序で確認します：
+
+**Level 1: 接続確認**
+- EC2インスタンスの状態
+- セキュリティグループの設定
+- SSH接続テスト
+
+**Level 2: Docker確認**
+- Dockerサービスの状態（`sudo systemctl status docker`）
+- コンテナの状態（`docker ps -a`）
+- ログの確認（`docker logs`）
+
+**Level 3: アプリケーション確認**
+- 環境変数の設定（`docker inspect`）
+- ファイル権限（`ls -la bin/`）
+- Railsログ（`docker exec ... tail log/production.log`）
+
+**Level 4: データベース確認**
+- MySQLの起動状態（`sudo systemctl status mysql`）
+- ユーザーと認証方式（`SELECT user, host, plugin FROM mysql.user`）
+- 権限の確認（`SHOW GRANTS`）
+
+**Level 5: ネットワーク確認**
+- ポートの開放（`netstat -tuln | grep 3000`）
+- ファイアウォール設定（`sudo ufw status`）
+- `--network host`の確認
+
+詳細は`docs/private/DEPLOYMENT_NOTES.md`を参照してください。
+
+---
+
+### 🔄 デプロイワークフロー
+
+このプロジェクトでは、環境の不整合を防ぐため、以下のワークフローを徹底しています：
+
+```
+ローカル環境で修正
+    ↓
+動作確認
+    ↓
+GitHub Desktop でPush
+    ↓
+GitHub経由でデプロイ完了を確認
+    ↓
+EC2にSSH接続
+    ↓
+git pull で最新コードを取得
+    ↓
+Dockerイメージを再ビルド
+    ↓
+コンテナを起動
+    ↓
+動作確認
+```
+
+**このワークフローを守ることで**：
+- すべての変更がGitで管理される
+- 本番環境で直接コードを編集しない
+- 「ローカルでは動くのに本番で動かない」を防げる
+- バージョン管理が徹底される
+
+---
+
+### 従来のデプロイ手順（参考）
 
 #### 1. EC2インスタンスの準備
 - Ubuntu 24.04 LTS
