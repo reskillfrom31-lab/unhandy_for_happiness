@@ -40,3 +40,8 @@
 
 # Ignore build logs
 build.log
+
+# 機密情報（GitHubに絶対にPushしない）
+docs/private/
+*.secret
+*SECRETS*
