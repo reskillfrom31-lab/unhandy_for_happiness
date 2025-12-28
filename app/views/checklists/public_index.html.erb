@@ -1,0 +1,95 @@
+<div class="container">
+  <h1>みんなの質問を見る</h1>
+  
+  <p>他のユーザーが公開している質問を参考にできます。気に入った質問があれば、自分の質問として追加してみましょう。</p>
+  
+  <%= link_to '← 自分の質問管理に戻る', checklists_path, class: 'button' %>
+  
+  <hr>
+  
+  <% if @public_checklists.any? %>
+    <div class="public-checklists">
+      <% @public_checklists.each do |checklist| %>
+        <div class="checklist-card">
+          <div class="checklist-content">
+            <h3><%= checklist.content %></h3>
+            <p class="checklist-meta">
+              質問タイプ: 
+              <% case checklist.question_type %>
+              <% when 'free_text' %>
+                自由記述
+              <% when 'yes_no' %>
+                はい/いいえ
+              <% when 'numeric' %>
+                数値
+              <% end %>
+            </p>
+            <p class="checklist-author">
+              投稿者: 匿名ユーザー
+            </p>
+            <p class="checklist-date">
+              <%= checklist.created_at.strftime('%Y年%m月%d日') %>
+            </p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p>公開されている質問はまだありません。</p>
+  <% end %>
+</div>
+
+<style>
+  .public-checklists {
+    margin-top: 20px;
+  }
+  
+  .checklist-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+  }
+  
+  .checklist-card:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  .checklist-content h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+  }
+  
+  .checklist-meta {
+    font-size: 0.9em;
+    color: #666;
+    margin: 5px 0;
+  }
+  
+  .checklist-author {
+    font-size: 0.85em;
+    color: #999;
+    margin: 5px 0;
+  }
+  
+  .checklist-date {
+    font-size: 0.8em;
+    color: #aaa;
+  }
+  
+  .button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  
+  .button:hover {
+    background-color: #0056b3;
+  }
+</style>

@@ -3,7 +3,7 @@ class ChecklistsController < ApplicationController
   before_action :set_checklist, only: %i[edit update destroy]
   
   def index
-    @checklists = current_user.checklists.order(created_at: :asc)
+    @checklists = current_user.checklists.order(:display_order, created_at: :asc)
     @checklist = current_user.checklists.new
     @checklist.question_type ||= "free_text"  # デフォルト値を設定
   end
@@ -45,6 +45,13 @@ class ChecklistsController < ApplicationController
     all_answered = all_questions_answered?
     render json: { all_answered: all_answered }
   end
+  # 公開質問一覧
+  def public_index
+    @public_checklists = Checklist.where(is_public: true)
+                                  .includes(:user)
+                                  .order(created_at: :desc)
+                                  .limit(100)
+  end
 
   def edit
   end
@@ -73,7 +80,7 @@ class ChecklistsController < ApplicationController
   end
 
   def checklist_params
-    params.require(:checklist).permit(:content, :question_type)
+    params.require(:checklist).permit(:content, :question_type, :is_public)
   end
 
   def all_questions_answered?

@@ -16,5 +16,6 @@ Rails.application.routes.draw do
   resources :checklists do
     post 'create_answer', on: :member
     get 'check_all_answered', on: :collection
+    get 'public_index', on: :collection  # ← この行を追加
   end
 end

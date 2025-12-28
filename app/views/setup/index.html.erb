@@ -181,7 +181,7 @@
       
       <div class="step">
         <h3>なぜunhandy_redirectorが必要ですか？</h3>
-        <p>unhandy_redirectorは、YouTubeやInstagramへのアクセスを自動的にこのアプリにリダイレクトするブラウザ拡張機能です。この拡張機能を正確に作成・保存しなければ、Unhandy for Happinessアプリを利用できません。</p>
+        <p>unhandy_redirectorは、YouTube、Instagram、Twitter、X、TikTokへのアクセスを自動的にこのアプリにリダイレクトするブラウザ拡張機能です。この拡張機能を正確に作成・保存しなければ、Unhandy for Happinessアプリを利用できません。</p>
       </div>
 
       <div class="step">
@@ -199,14 +199,17 @@
   "manifest_version": 3,
   "name": "Unhandy for Happiness Redirector",
   "version": "1.0",
-  "description": "YouTubeとInstagramへのアクセスを unhandy_for_happiness アプリにリダイレクトします。",
+  "description": "YouTube、Instagram、Twitter、X、TikTokへのアクセスを unhandy_for_happiness アプリにリダイレクトします。",
   "permissions": [
     "tabs",
     "webNavigation"
   ],
   "host_permissions": [
-    "*://*.youtube.com/*",
-    "*://*.instagram.com/*"
+  "*://*.youtube.com/*",
+  "*://*.instagram.com/*",
+  "*://*.twitter.com/*",
+  "*://*.x.com/*",
+  "*://*.tiktok.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -233,7 +236,7 @@
 // 開発中は 'http://localhost:3000'
 // 本番環境にデプロイしたら、そのURLに変更してください (例: 'https://www.unhandy-for-happiness.com')
 const redirectUrl = "http://localhost:3000";
-const targetSites = ["youtube.com", "instagram.com"];
+const targetSites = ["youtube.com", "instagram.com", "twitter.com", "x.com", "tiktok.com"];
 
 // webNavigation APIを使用して、ナビゲーション開始前にURLをチェック
 chrome.webNavigation.onBeforeNavigate.addListener((details) => {
@@ -269,7 +272,10 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
 }, {
   url: [
     { hostContains: 'youtube.com' },
-    { hostContains: 'instagram.com' }
+    { hostContains: 'instagram.com' },
+    { hostContains: 'twitter.com' },
+    { hostContains: 'x.com' },
+    { hostContains: 'tiktok.com' }
   ]
 });</code></pre>
         </div>

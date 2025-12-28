@@ -1,15 +1,18 @@
 {
   "manifest_version": 3,
   "name": "Unhandy for Happiness Redirector",
-  "version": "1.0",
-  "description": "YouTubeとInstagramへのアクセスを unhandy_for_happiness アプリにリダイレクトします。",
+  "version": "1.1",
+  "description": "YouTube、Instagram、Twitter、X、TikTokへのアクセスを unhandy_for_happiness アプリにリダイレクトします。",
   "permissions": [
     "tabs",
     "webNavigation"
   ],
   "host_permissions": [
     "*://*.youtube.com/*",
-    "*://*.instagram.com/*"
+    "*://*.instagram.com/*",
+    "*://*.twitter.com/*",
+    "*://*.x.com/*",
+    "*://*.tiktok.com/*"
   ],
   "background": {
     "service_worker": "background.js"
