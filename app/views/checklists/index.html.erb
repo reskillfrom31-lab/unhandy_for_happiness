@@ -7,6 +7,8 @@
         このアプリを機能させるには、最低5個の質問文をご自身で作成してください。
         <br>質問文は自由記述、はい/いいえ、数値の3種類で作成できます。
         <br>現在 <%= @checklists.count %>個です。
+        <br><br>
+        <%= link_to '質問を追加する', manage_checklists_path, class: 'button-primary' %>
       </p>
     <% else %>
       <div id="question-display" class="hidden">
@@ -47,67 +49,9 @@
     <% end %>
   </div>
 
-  <hr>
-  <div style="margin: 20px 0;">
-    <%= link_to 'みんなの質問を見る →', public_index_checklists_path, class: 'button-secondary' %>
-  </div>
-  <h2>質問の管理</h2>
-  <%# 新規作成フォーム %>
-  <h3>新しい質問を追加</h3>
-  <%= form_with(model: @checklist, url: checklists_path, local: true) do |form| %>
-    <div>
-      <%= form.label :content, "質問内容" %><br>
-      <%= form.text_area :content, rows: 2 %>
-    </div>
-    <div>
-      <%= form.label :question_type, "質問タイプ" %><br>
-      <%= form.select :question_type, [["自由記述", "free_text"], ["はい/いいえ", "yes_no"], ["数値", "numeric"]], { selected: "free_text" } %>
-    </div>
-    <div>
-      <%= form.label :is_public do %>
-        <%= form.check_box :is_public %>
-        この質問を他のユーザーに公開しますか？
-      <% end %>
-      <p style="font-size: 0.9em; color: #666;">
-        公開すると、他のユーザーがあなたの質問を参考にできます。
-      </p>
-    </div>
-    <div>
-      <%= form.submit "質問を追加" %>
-    </div>
-  <% end %>
-
-<%# 既存の質問一覧 %>
-  <h3>登録済みの質問一覧 (<%= @checklists.count %>/20)</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>質問内容</th>
-        <th>公開状態</th>
-        <th colspan="2"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @checklists.each do |checklist| %>
-        <tr>
-          <td><%= checklist.content %></td>
-          <td>
-            <% if checklist.is_public %>
-              <span style="color: green;">✓ 公開中</span>
-            <% else %>
-              <span style="color: gray;">非公開</span>
-            <% end %>
-          </td>
-          <td><%= link_to '編集', edit_checklist_path(checklist) %></td>
-          <td><%= link_to '削除', checklist_path(checklist), data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' } %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-
 <%# JavaScript %>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('turbo:load', () => {
       const startButton = document.getElementById('start-button');
       if (!startButton) return;
 
@@ -115,6 +59,17 @@
       const urlParams = new URLSearchParams(window.location.search);
       const fromSite = urlParams.get('from') || 'youtube'; // デフォルトはyoutube
       
+      // 【追加開始】自動開始フラグをチェック
+      const autoStart = urlParams.get('auto_start');
+
+      // 自動開始フラグがあり、startButtonが表示されている場合は自動的に開始
+      if (autoStart === 'true' && startButton && !startButton.classList.contains('hidden')) {
+        // 少し遅延させてから自動的にチェックリストを開始
+        setTimeout(() => {
+          startButton.click();
+        }, 800); // 0.8秒後に自動クリック（画面が完全に読み込まれてから）
+      }
+      // 【追加終了】
       // SNSごとのURLマッピング
       const siteUrls = {
         'youtube': 'https://www.youtube.com',
@@ -380,5 +335,17 @@
     .button-secondary:hover {
       background-color: #218838;
     }
+    .button-primary {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .button-primary:hover {
+      background-color: #0056b3;
+    }      
   </style>
 </div>

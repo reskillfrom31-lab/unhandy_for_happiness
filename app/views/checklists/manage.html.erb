@@ -1,0 +1,96 @@
+<div class="container">
+  <h1>質問の管理</h1>
+  
+  <div style="margin: 20px 0;">
+    <%= link_to '← チェックリスト画面に戻る', checklists_path, class: 'button-secondary' %>
+    <%= link_to '➕ 新しい質問を追加', new_checklist_path, class: 'button-primary' %>
+    <%= link_to 'みんなの質問を見る →', public_index_checklists_path, class: 'button-secondary' %>
+  </div>
+
+  <h2>登録済みの質問一覧 (<%= @checklists.count %>/20)</h2>
+  
+  <% if @checklists.count < 5 %>
+    <p class="warning" style="margin-bottom: 20px;">
+      ⚠️ 最低5個の質問が必要です。あと<%= 5 - @checklists.count %>個追加してください。
+    </p>
+  <% end %>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>質問内容</th>
+        <th>タイプ</th>
+        <th>公開状態</th>
+        <th colspan="2"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @checklists.each do |checklist| %>
+        <tr>
+          <td><%= checklist.content %></td>
+          <td>
+            <% case checklist.question_type %>
+            <% when 'free_text' %>
+              📝 自由記述
+            <% when 'yes_no' %>
+              ✓ はい/いいえ
+            <% when 'numeric' %>
+              🔢 数値
+            <% end %>
+          </td>
+          <td>
+            <% if checklist.is_public %>
+              <span style="color: green;">✓ 公開中</span>
+            <% else %>
+              <span style="color: gray;">非公開</span>
+            <% end %>
+          </td>
+          <td><%= link_to '編集', edit_checklist_path(checklist) %></td>
+          <td><%= link_to '削除', checklist_path(checklist), data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <style>
+    .button-primary {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    
+    .button-primary:hover {
+      background-color: #0056b3;
+    }
+    
+    .button-secondary {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #95a5a6;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    
+    .button-secondary:hover {
+      background-color: #7f8c8d;
+    }
+    
+    .warning {
+      color: #856404;
+      background-color: #fff3cd;
+      border: 1px solid #ffeeba;
+      padding: 15px;
+      border-radius: 5px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</div>

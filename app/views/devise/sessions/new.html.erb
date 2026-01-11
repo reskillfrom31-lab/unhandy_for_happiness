@@ -1,5 +1,13 @@
 <h2>ログイン</h2>
-
+<div style="margin-bottom: 20px; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3; border-radius: 4px;">
+  <p style="margin: 0;">
+    💡 <strong>初めてご利用の方は</strong>
+    <%= link_to 'こちらで事前準備', setup_index_path, style: 'color: #0066cc; text-decoration: underline;' %>
+    を完了後、
+    <%= link_to '新規登録', new_user_registration_path, style: 'color: #0066cc; text-decoration: underline;' %>
+    してください
+  </p>
+</div>
 <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
   <div class="field">
     <%= f.label :email, "メールアドレス" %><br />

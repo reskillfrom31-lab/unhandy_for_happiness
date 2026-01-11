@@ -2,22 +2,29 @@ class ChecklistsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_checklist, only: %i[edit update destroy]
   
+  # チェックリスト実行画面（質問に答える）
   def index
     @checklists = current_user.checklists.order(:display_order, created_at: :asc)
+  end
+
+  # 質問管理画面（追加・編集・削除）
+  def manage
+    @checklists = current_user.checklists.order(:display_order, created_at: :asc)
     @checklist = current_user.checklists.new
-    @checklist.question_type ||= "free_text"  # デフォルト値を設定
+    @checklist.question_type ||= "free_text"
   end
 
   def new
+    @checklist = current_user.checklists.new
+    @checklist.question_type ||= "free_text"
   end
   
   def create
     @checklist = current_user.checklists.new(checklist_params)
     if @checklist.save
-      redirect_to checklists_path, notice: '質問が追加されました。'
+      redirect_to manage_checklists_path, notice: '質問が追加されました。'
     else
-      @checklists = current_user.checklists.order(created_at: :asc)
-      render :index, status: :unprocessable_entity
+      render :new, status: :unprocessable_entity  # ← manage から new に変更
     end
   end
 
@@ -58,7 +65,7 @@ class ChecklistsController < ApplicationController
 
   def update
     if @checklist.update(checklist_params)
-      redirect_to checklists_path, notice: '質問が更新されました。'
+      redirect_to manage_checklists_path, notice: '質問が更新されました。'
     else
       render :edit, status: :unprocessable_entity
     end
@@ -66,10 +73,10 @@ class ChecklistsController < ApplicationController
 
   def destroy
     if current_user.checklists.count <= 5
-      redirect_to checklists_path, alert: '質問は最低5個必要です。'
+      redirect_to manage_checklists_path, alert: '質問は最低5個必要です。'
     else
       @checklist.destroy
-      redirect_to checklists_path, notice: '質問が削除されました。', status: :see_other
+      redirect_to manage_checklists_path, notice: '質問が削除されました。', status: :see_other
     end
   end
 

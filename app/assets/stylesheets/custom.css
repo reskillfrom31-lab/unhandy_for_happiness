@@ -12,7 +12,7 @@ body {
 
 /* Main Container for the entire app content */
 .container {
-  max-width: 960px;
+  max-width: 1200px;
   margin: 20px auto;
   background-color: #fff;
   padding: 30px;

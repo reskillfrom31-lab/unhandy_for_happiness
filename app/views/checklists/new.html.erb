@@ -1,2 +1,37 @@
-<h1>Checklists#new</h1>
-<p>Find me in app/views/checklists/new.html.erb</p>
+<div class="container">
+  <h1>新しい質問を追加</h1>
+  <div style="margin: 20px 0;">
+    <%= link to '← 質問管理に戻る', manage_checklists_path, class: 'button-secondary' %>
+  </div>
+
+  <%= form_with(model: @checklist, url: checklists_path, local: true) do |form| %>
+    <div>
+      <%= form.label :content, "質問内容" %><br>
+      <%= form.text_area :content, rows: 4, placeholder: "例: 今日、良かったことを3つ書き出して下さい" %>
+    </div>
+
+    <div>
+      <%= form.label :question_type, "質問タイプ" %><br>
+      <%= form.select :question_type, [["自由記述", "free_text"], ["はい/いいえ", "yes_no"], ["数値", "numeric"]], { selected: @checklist.question_type || "free_text" } %>
+      <p style="font-size: 0.9em; color: #666; margin-top: 5px">
+        ・自由記述: 文章で答える質問<br>
+        ・はい/いいえ: はい/いいえで答える質問<br>
+        ・数値: 数値で答える質問(例: 睡眠時間)
+      </p>
+    </div>
+
+    <div>
+      <%= form.label :is_public do %>
+        <%= form.check_box :is_public %>
+        この質問を他のユーザーに公開しますか？
+      <% end %>
+      <p style="font-size: 0.9em; color: #666;">
+        公開すると、他のユーザーがあなたの質問を参考にできます。
+      </p>
+    </div>
+
+    <div>
+      <%= form.submit "質問を追加", style: class: 'button-primary' %>
+    </div>
+  <% end %>
+</div>

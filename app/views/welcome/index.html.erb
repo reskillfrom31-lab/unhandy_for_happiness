@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Unhandy for Happiness - Welcome</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .welcome-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 60px 40px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      font-size: 1.1em;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .subtitle {
+      font-size: 1.2em;
+      color: #333;
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .btn {
+      display: block;
+      padding: 18px 30px;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 1.1em;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+
+    .btn-secondary:hover {
+      background: #f0f4ff;
+      transform: translateY(-2px);
+    }
+
+    .btn-tertiary {
+      background: #f8f9fa;
+      color: #555;
+      border: 2px solid #ddd;
+    }
+
+    .btn-tertiary:hover {
+      background: #e9ecef;
+      transform: translateY(-2px);
+    }
+
+    .divider {
+      margin: 30px 0;
+      color: #999;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 600px) {
+      .welcome-container {
+        padding: 40px 30px;
+      }
+
+      .logo {
+        font-size: 2em;
+      }
+
+      .btn {
+        padding: 15px 25px;
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="welcome-container">
+    <div class="logo">🚀 Unhandy for Happiness</div>
+    <p class="tagline">SNS利用前に自分と向き合う習慣を</p> 
+    <div class="subtitle">まずは以下から選択してください</div>
+    <div style="margin: 30px 0; padding: 20px; background-color: #e8f5e9; border-radius: 10px; border: 2px solid #4CAF50;">
+      <h3 style="margin-top: 0; color: #2e7d32;">
+        ✨ 初めての方（推奨）
+      </h3>
+      <p>まずは5分で準備を完了させましょう</p>
+      <%= link_to "事前準備について確認する", setup_index_path, class: "btn btn-tertiary" %>
+    </div>
+
+    <div class="divider">または</div>
+
+    <div class="button-group">
+      <%= link_to "新規登録", new_user_registration_path, class: "btn btn-primary" %>
+      <%= link_to "ログイン", new_user_session_path, class: "btn btn-secondary" %>
+    </div>
+
+    <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+      ※ 既にChrome拡張機能の準備が完了している方は、直接登録・ログインできます
+    </p>
+  </div>
+</body>
+</html>

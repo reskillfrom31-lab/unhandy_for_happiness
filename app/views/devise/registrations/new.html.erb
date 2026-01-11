@@ -1,5 +1,11 @@
 <h2>新規ユーザー登録</h2>
-
+<div style="margin-bottom: 20px; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+  <p style="margin: 0;">
+    💡 <strong>まだChrome拡張機能の準備がお済みでない方は</strong>
+    <%= link_to 'こちらで事前準備', setup_index_path, style: 'color: #0066cc; text-decoration: underline;' %>
+    を完了してください（5分程度）
+  </p>
+</div>
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
