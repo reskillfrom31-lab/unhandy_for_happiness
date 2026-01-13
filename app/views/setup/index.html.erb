@@ -225,7 +225,7 @@
         <div class="note">
           <strong>重要:</strong> コード内の <code>redirectUrl</code> の値を確認してください。
           <ul>
-            <li>開発中（ローカルでテストする場合）: <code>"http://localhost:3000"</code></li>
+            <li>開発中（ローカルでテストする場合）: <code>"http://52.68.23.100:3000"</code></li>
             <li>本番環境にデプロイしたら: そのURLに変更してください（例: <code>"https://www.unhandy-for-happiness.com"</code>）</li>
           </ul>
         </div>
@@ -233,9 +233,9 @@
         <div class="code-block">
           <button class="copy-btn" onclick="copyCode(this)">コピー</button>
           <pre><code id="background-code">// リダイレクト先のURL
-// 開発中は 'http://localhost:3000'
+// 開発中は 'http://52.68.23.100:3000'
 // 本番環境にデプロイしたら、そのURLに変更してください (例: 'https://www.unhandy-for-happiness.com')
-const redirectUrl = "http://localhost:3000";
+const redirectUrl = "http://52.68.23";
 const targetSites = ["youtube.com", "instagram.com", "twitter.com", "x.com", "tiktok.com"];
 
 // webNavigation APIを使用して、ナビゲーション開始前にURLをチェック
