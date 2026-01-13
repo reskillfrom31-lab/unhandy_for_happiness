@@ -24,12 +24,12 @@ class ChecklistsController < ApplicationController
     if @checklist.save
       redirect_to manage_checklists_path, notice: '質問が追加されました。'
     else
-      render :new, status: :unprocessable_entity  # ← manage から new に変更
+      render :new, status: :unprocessable_content
     end
   end
 
   def create_answer
-    @checklist = current_user.checklists.find(params[:id])  # checklist_id → id に変更
+    @checklist = current_user.checklists.find(params[:id])
     @answer = current_user.answers.new(
       checklist: @checklist,
       content: params[:content]  # JSONリクエストなので、このままでOK（Railsが自動的にパースする）
@@ -67,7 +67,7 @@ class ChecklistsController < ApplicationController
     if @checklist.update(checklist_params)
       redirect_to manage_checklists_path, notice: '質問が更新されました。'
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

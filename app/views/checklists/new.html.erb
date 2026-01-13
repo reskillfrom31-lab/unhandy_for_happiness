@@ -1,7 +1,7 @@
 <div class="container">
   <h1>新しい質問を追加</h1>
   <div style="margin: 20px 0;">
-    <%= link to '← 質問管理に戻る', manage_checklists_path, class: 'button-secondary' %>
+    <%= link_to '← 質問管理に戻る', manage_checklists_path, class: 'button-secondary' %>
   </div>
 
   <%= form_with(model: @checklist, url: checklists_path, local: true) do |form| %>
@@ -31,7 +31,7 @@
     </div>
 
     <div>
-      <%= form.submit "質問を追加", style: class: 'button-primary' %>
+      <%= form.submit "質問を追加", class: 'button-primary' %>
     </div>
   <% end %>
 </div>

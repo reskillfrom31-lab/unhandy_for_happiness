@@ -1,6 +1,3 @@
-// リダイレクト先のURL
-// 開発中は 'http://localhost:3000'
-// 本番環境にデプロイしたら、そのURLに変更してください (例: 'https://www.unhandy-for-happiness.com')
 const redirectUrl = "http://localhost:3000";
 const targetSites = ["youtube.com", "instagram.com", "twitter.com", "x.com", "tiktok.com"];
 
