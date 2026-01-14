@@ -444,8 +444,8 @@ git pull → Docker再ビルド → コンテナ起動 → 動作確認
 ## 👤 作成者
 
 **服部康太**
-- GitHub: [@reskillfrom31-lab](https://github.com/reskillfrom31-lab) 🔧 [要変更: your-usernameを実際のGitHubユーザー名に変更]
-- Email: re.skill.from31@gmail.com 🔧 [要変更: 実際のメールアドレスに変更]
+- GitHub: [@reskillfrom31-lab](https://github.com/reskillfrom31-lab) 
+- Email: re.skill.from31@gmail.com 
 
 ---
 
