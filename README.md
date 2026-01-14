@@ -137,12 +137,28 @@ SNSや動画サイトへの依存に悩む方を支援するWebアプリケー�
 - 自己内省を促す質問システム
 - 段階的なアクセス許可（5つの質問 → 10秒待機 → アクセス許可）
 - 質問のカスタマイズ性（3種類の質問タイプ）
+- 画面の役割分離（一覧・管理・追加を明確に区別）
+
+### 6. Dockerネットワーク設定の理解
+- ホストネットワーク（`--network host`）の採用
+- MySQLへの接続を確保しつつ、シンプルな構成を維持
+- 今後の改善方向（Docker Compose化）を明確に設定
 
 ---
 
 ## 📚 デプロイで学んだこと
 
 このプロジェクトでは、初めてのAWS EC2へのデプロイに挑戦しました。その過程で多くのエラーに遭遇しましたが、それぞれが貴重な学びとなりました。
+
+### デプロイ実績
+
+| 回数 | 日付 | 時間 | 主なエラー/問題 |
+|------|------|------|----------------|
+| **1回目** | 2025-12-19 | 約8時間 | MySQL認証、権限、SECRET_KEY_BASE等（5つのエラー） |
+| **2回目** | 2025-12-28 | 約2時間 | コンテナ内ファイル同期（3つの問題） |
+| **3回目** | 2026-01-13 | 約1.5時間 | Dockerネットワーク設定（1つの問題） |
+
+**改善率**: 初回比で約5.3倍の効率化
 
 ### 遭遇した主なエラーと解決
 
@@ -166,10 +182,14 @@ SNSや動画サイトへの依存に悩む方を支援するWebアプリケー�
 **問題**: 単純なパスワードがMySQLのセキュリティポリシーで拒否された  
 **学び**: 本番環境でのセキュリティ要件、強固なパスワードの必要性
 
+#### 6. Dockerネットワーク設定エラー（3回目デプロイ）
+**問題**: コンテナからホスト側のMySQLに接続できない  
+**学び**: Dockerの隔離設計、`--network host`の使用理由、ポートマッピングとの違い
+
 ### 習得したスキル
 
 **技術面**
-- Dockerの実践的な使用（イメージビルド、コンテナ管理、環境変数）
+- Dockerの実践的な使用（イメージビルド、コンテナ管理、環境変数、ネットワーク設定）
 - Linuxサーバー管理（SSH接続、ファイル権限、systemctl）
 - MySQLのユーザー管理と認証方式の理解
 - AWS EC2とセキュリティグループの基本操作
@@ -179,6 +199,12 @@ SNSや動画サイトへの依存に悩む方を支援するWebアプリケー�
 - **ログの活用**: `docker logs`で必ず原因を確認する習慣
 - **「なぜ？」を大切にする**: 動いたからOKではなく、なぜ動いたのか理解する
 - **ドキュメント化**: エラーと解決方法を記録し、次回に活かす
+- **効率化**: デプロイ時間を8時間から1.5時間に短縮（約5.3倍）
+
+**UX改善・セキュリティ面**
+- ユーザー体験を考慮した画面設計（質問管理・追加・公開画面の分離）
+- セキュリティテストの実装（マスアサインメント、XSS、SQLインジェクション等）
+- 認証・認可のテストコード作成
 
 ### 詳細なデプロイストーリー
 
@@ -190,30 +216,57 @@ SNSや動画サイトへの依存に悩む方を支援するWebアプリケー�
 - 学んだ技術的知識
 - 今後の改善計画
 
+### 最新の技術的挑戦（2026年1月）
+
+#### UX改善
+- 質問管理画面を3つに分離（一覧・管理・追加）
+- ルーティング構成の最適化
+- ユーザビリティ向上のための画面フロー改善
+
+#### セキュリティ強化
+- 包括的なセキュリティテストの実装（32テスト）
+- マスアサインメント攻撃対策のテスト
+- XSS（クロスサイトスクリプティング）対策のテスト
+- SQLインジェクション対策のテスト
+- セッション管理のテスト
+- バリデーションのテスト
+
 ---
 
 ## 🚀 今後の改善点
 
-### セキュリティ
-- [ ] HTTPS対応（Let's EncryptでSSL証明書取得）
+### インフラ（優先度: 高）
+- [ ] **EBSボリューム拡張**（8GB → 16GB）- Docker Compose導入の前提条件
+- [ ] **MySQLのコンテナ化**（Docker Compose）- セキュリティ向上と業界標準の構成へ
+- [ ] **ポートマッピング方式への移行**（`-p 3000:3000`）- `--network host`からの脱却
+
+### セキュリティ（優先度: 中）
+- [ ] **HTTPS対応**（Let's EncryptまたはCloudflare）
+- [ ] **定期バックアップの自動化**（crontab + S3）
 - [ ] メール送信機能の実装（SendGrid または AWS SES）
 - [ ] より強固なパスワードポリシー
 
-### インフラ
-- [ ] docker-composeでの管理
+### 運用効率化（優先度: 中）
 - [ ] CI/CDパイプラインの構築（GitHub Actions）
 - [ ] 独自ドメインの取得
 - [ ] Nginxをリバースプロキシとして導入
 
-### 機能
-- [ ] 質問の公開・共有機能（ハッシュタグ検索）
+### 機能拡張（優先度: 低）
+- [ ] 質問の公開・共有機能の強化（ハッシュタグ検索）
 - [ ] 統計情報の表示（アクセス履歴、回答履歴）
 - [ ] 複数ブラウザ対応（Firefox、Edge）
 
-### コード品質
-- [ ] テストコードの充実（RSpec、Capybara）
+### コード品質（継続的改善）
+- [x] セキュリティテストの実装（マスアサインメント、XSS、SQLインジェクション等）
+- [ ] RSpecへの移行（現在はMinitestを使用）
+- [ ] システムテストの追加（Capybara）
 - [ ] ER図の作成
 - [ ] APIドキュメントの整備
+
+### 実装予定（2026年1月18日以降）
+1. EBSボリューム拡張
+2. Docker Composeでのコンテナ化
+3. HTTPS化の検討
 
 ---
 
@@ -267,467 +320,112 @@ http://localhost:3000
 
 ## 🚢 デプロイ方法
 
-### AWS EC2へのデプロイ手順
+### クイックスタート
 
-デプロイは**6つのPhase**に分けて進めます。各Phaseにチェックリストがあり、確実にデプロイできるようになっています。
+デプロイは**6つのPhase**に分けて進めます：
 
-詳細なチェックリストは`docs/private/DEPLOYMENT_NOTES.md`を参照してください。
+1. **Phase 0: デプロイ前の準備**
+   - セキュリティチェック（`.gitignore`で機密情報を除外）
+   - GitHubにPush
+   - サーバーとデータベースの準備確認
 
----
+2. **Phase 1: サーバーへの接続**
+   - IPアドレス確認 → セキュリティグループ更新 → SSH接続
 
-### Phase 0: デプロイ前の準備
+3. **Phase 2: コードの取得と準備**
+   - `git pull origin main` → ファイル権限の確認
 
-#### ローカル環境でのコード準備
-```bash
-# セキュリティチェック（最重要）
-cat .gitignore | grep -E "\.env|docs/private|master.key"
-# 上記3つが除外されていることを確認
+4. **Phase 3: Dockerイメージのビルド**
+   - ディスク容量確認 → `docker build -t unhandy-for-happiness:latest .`
 
-# GitHubにPush
-git add .
-git commit -m "デプロイ準備完了"
-git push origin main
-```
+5. **Phase 4: コンテナの起動**
+   - 既存コンテナ削除 → `docker run -d --name unhandy-for-happiness --network host ...`
 
-#### サーバーの準備確認
-- EC2インスタンスが「running」状態
-- セキュリティグループでHTTP（ポート3000）とSSH（ポート22）を開放
-- 現在のIPアドレスを確認（`curl ifconfig.me`）
+6. **Phase 5: 動作確認**
+   - コンテナ状態確認 → ログ確認 → ブラウザでアクセス
 
-#### データベースの準備確認
-- MySQLが起動している
-- データベース、ユーザー、権限が設定済み
-- 認証方式が`mysql_native_password`
+**詳細な手順とチェックリスト**: [`docs/private/DEPLOYMENT_NOTES.md`](docs/private/DEPLOYMENT_NOTES.md) を参照してください。
 
 ---
 
-### Phase 1: サーバーへの接続
+### トラブルシューティング（5段階フロー）
 
-```bash
-# 現在のIPアドレスを確認
-curl ifconfig.me
+問題が発生した場合、以下の順序で確認：
 
-# 必要に応じてAWSセキュリティグループのSSHルールを更新
+1. **Level 1: 接続確認** - EC2状態、セキュリティグループ、SSH
+2. **Level 2: Docker確認** - コンテナ状態、ログ
+3. **Level 3: アプリケーション確認** - 環境変数、ファイル権限
+4. **Level 4: データベース確認** - MySQL起動、認証方式、権限
+5. **Level 5: ネットワーク確認** - ポート開放、`--network host`設定
 
-# SSH接続
-ssh -i ~/.ssh/your-key.pem ubuntu@<EC2-IP>
-```
-
----
-
-### Phase 2: コードの取得と準備
-
-```bash
-# アプリディレクトリに移動
-cd ~/apps/unhandy_for_happiness
-
-# 最新コードを取得
-git pull origin main
-
-# 実行権限を確認・付与
-ls -la bin/docker-entrypoint
-chmod +x bin/docker-entrypoint
-```
+**詳細な対処法**: [`docs/private/DEPLOYMENT_NOTES.md`](docs/private/DEPLOYMENT_NOTES.md) を参照してください。
 
 ---
 
-### Phase 3: Dockerイメージのビルド
+### デプロイワークフロー
 
-```bash
-# ディスク容量を確認
-df -h
+環境の不整合を防ぐため、以下のワークフローを徹底：
 
-# イメージをビルド
-docker build -t unhandy-for-happiness:latest .
-
-# ビルド成功を確認
-docker images | grep unhandy-for-happiness
 ```
+ローカル修正 → 動作確認 → GitHub Push → EC2接続 → 
+git pull → Docker再ビルド → コンテナ起動 → 動作確認
+```
+
+**重要**: 本番環境で直接コードを編集せず、必ずGit経由でデプロイする
 
 ---
 
-### Phase 4: コンテナの起動
+### 初回セットアップ
 
-```bash
-# 既存コンテナを削除
-docker rm -f unhandy-for-happiness
+初めてデプロイする場合の手順：
 
-# 環境変数を準備（SECRETS.mdを参照）
-# 新しいコンテナを起動
-docker run -d \
-  --name unhandy-for-happiness \
-  --network host \
-  --restart always \
-  -e RAILS_ENV=production \
-  -e SECRET_KEY_BASE=<SECRETS.mdから> \
-  -e UNHANDY_FOR_HAPPINESS_DATABASE_PASSWORD='<SECRETS.mdから>' \
-  unhandy-for-happiness:latest
-```
+1. **EC2とソフトウェアの準備**（Ubuntu 24.04 LTS、Docker、MySQL）
+2. **データベースとユーザーの作成**（`mysql_native_password`認証）
+3. **SECRET_KEY_BASEの生成**（`docker run --rm ... bin/rails secret`）
+4. **コンテナ起動**（`--network host`でホスト側のMySQLに接続）
 
----
-
-### Phase 5: 動作確認
-
-```bash
-# コンテナが起動しているか確認
-docker ps
-
-# ログを確認
-docker logs -f unhandy-for-happiness
-# "Listening on tcp://0.0.0.0:3000" が表示されればOK
-# Ctrl+C で終了
-
-# ブラウザでアクセス
-# http://<EC2-IP>:3000
-```
-
----
-
-### Phase 6: トラブルシューティング（5段階）
-
-エラーが発生した場合、以下の順序で確認します：
-
-**Level 1: 接続確認**
-- EC2インスタンスの状態
-- セキュリティグループの設定
-- SSH接続テスト
-
-**Level 2: Docker確認**
-- Dockerサービスの状態（`sudo systemctl status docker`）
-- コンテナの状態（`docker ps -a`）
-- ログの確認（`docker logs`）
-
-**Level 3: アプリケーション確認**
-- 環境変数の設定（`docker inspect`）
-- ファイル権限（`ls -la bin/`）
-- Railsログ（`docker exec ... tail log/production.log`）
-
-**Level 4: データベース確認**
-- MySQLの起動状態（`sudo systemctl status mysql`）
-- ユーザーと認証方式（`SELECT user, host, plugin FROM mysql.user`）
-- 権限の確認（`SHOW GRANTS`）
-
-**Level 5: ネットワーク確認**
-- ポートの開放（`netstat -tuln | grep 3000`）
-- ファイアウォール設定（`sudo ufw status`）
-- `--network host`の確認
-
-詳細は`docs/private/DEPLOYMENT_NOTES.md`を参照してください。
-
----
-
-### 🔄 デプロイワークフロー
-
-このプロジェクトでは、環境の不整合を防ぐため、以下のワークフローを徹底しています：
-
-```
-ローカル環境で修正
-    ↓
-動作確認
-    ↓
-GitHub Desktop でPush
-    ↓
-GitHub経由でデプロイ完了を確認
-    ↓
-EC2にSSH接続
-    ↓
-git pull で最新コードを取得
-    ↓
-Dockerイメージを再ビルド
-    ↓
-コンテナを起動
-    ↓
-動作確認
-```
-
-**このワークフローを守ることで**：
-- すべての変更がGitで管理される
-- 本番環境で直接コードを編集しない
-- 「ローカルでは動くのに本番で動かない」を防げる
-- バージョン管理が徹底される
-
----
-
-### 従来のデプロイ手順（参考）
-
-#### 1. EC2インスタンスの準備
-- Ubuntu 24.04 LTS
-- Elastic IPの設定
-- セキュリティグループの設定：
-  - HTTP: ポート3000（または80）を`0.0.0.0/0`に開放
-  - HTTPS: ポート443を`0.0.0.0/0`に開放（今後のため）
-  - SSH: ポート22を自分のIPに制限
-
-#### 2. サーバーにSSH接続
-```bash
-ssh -i ~/.ssh/your-key.pem ubuntu@<EC2-IP>
-```
-
-#### 3. 必要なソフトウェアのインストール
-```bash
-# Dockerのインストール
-sudo apt update
-sudo apt install -y docker.io
-sudo systemctl start docker
-sudo systemctl enable docker
-sudo usermod -aG docker ubuntu
-
-# MySQLのインストール
-sudo apt install -y mysql-server
-sudo systemctl start mysql
-sudo systemctl enable mysql
-```
-
-#### 4. リポジトリをクローン
-```bash
-cd ~
-mkdir apps
-cd apps
-git clone https://github.com/your-username/unhandy_for_happiness.git  🔧 [要変更: your-usernameを実際のGitHubユーザー名に変更]
-cd unhandy_for_happiness
-```
-
-#### 5. データベースの設定
-```bash
-sudo mysql
-
-CREATE DATABASE IF NOT EXISTS unhandy_for_happiness_production;
-CREATE USER IF NOT EXISTS 'unhandy_for_happiness'@'localhost' IDENTIFIED WITH mysql_native_password BY 'YourSecurePassword123!';
-GRANT ALL PRIVILEGES ON unhandy_for_happiness_production.* TO 'unhandy_for_happiness'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
-```
-
-#### 6. Dockerイメージをビルド
-```bash
-# 実行権限を確認
-chmod +x bin/docker-entrypoint
-
-# ビルド
-docker build -t unhandy-for-happiness:latest .
-```
-
-#### 7. SECRET_KEY_BASEを生成
-```bash
-docker run --rm unhandy-for-happiness:latest bin/rails secret
-# 出力された文字列をコピー
-```
-
-#### 8. コンテナを起動
-```bash
-docker run -d \
-  --name unhandy-for-happiness \
-  --network host \
-  --restart always \
-  -e RAILS_ENV=production \
-  -e SECRET_KEY_BASE=<生成した文字列> \
-  -e UNHANDY_FOR_HAPPINESS_DATABASE_PASSWORD='YourSecurePassword123!' \
-  unhandy-for-happiness:latest
-```
-
-#### 9. 動作確認
-```bash
-# コンテナの状態確認
-docker ps
-
-# ログ確認
-docker logs unhandy-for-happiness
-
-# ブラウザでアクセス
-# http://<EC2-IP>:3000
-```
+**詳細**: [`docs/private/DEPLOYMENT_NOTES.md`](docs/private/DEPLOYMENT_NOTES.md) の「従来のデプロイ手順」を参照
 
 ---
 
 ## 🔧 運用方法
 
-### EC2インスタンスを停止→再起動した場合
+### よくある運用タスク
 
-1. AWSマネジメントコンソールにログイン
-2. EC2ダッシュボードでインスタンスを選択
-3. 「インスタンスの状態」→「インスタンスを開始」
-4. 数分待つ
-5. ブラウザでアクセス（自動的にアプリが起動しています）
+| タスク | 手順 |
+|--------|------|
+| **EC2再起動** | AWSコンソールから起動 → 自動的にアプリも起動（`--restart always`設定済み） |
+| **コンテナ再起動** | `docker restart unhandy-for-happiness` |
+| **コード更新** | `git pull` → `docker build` → `docker rm -f` → `docker run` |
+| **Wi-Fi変更時** | アプリアクセスは影響なし / SSH接続時はセキュリティグループを更新 |
 
-> **注意:** `--restart always`を設定しているため、手動でDockerコンテナを起動する必要はありません。
-
----
-
-### Wi-Fiを変更した場合（IPアドレスが変わった）
-
-**アプリへのアクセス:**
-- 何も設定変更不要。そのままアクセス可能です。
-
-**SSH接続が必要な場合:**
-
-1. **新しいIPアドレスを確認**
-```bash
-curl ifconfig.me
-```
-
-2. **AWSセキュリティグループを更新**
-   - EC2ダッシュボード → セキュリティグループ
-   - 該当のセキュリティグループを選択
-   - 「インバウンドルール」→「インバウンドルールを編集」
-   - SSHルール（ポート22）のソースを新しいIPに変更
-   - または「マイIP」を選択（自動で現在のIPが入力される）
-
-3. **SSH接続**
-```bash
-ssh -i ~/.ssh/your-key.pem ubuntu@<EC2-IP>
-```
-
----
-
-### コンテナの再起動が必要な場合
-
-```bash
-# SSH接続後
-docker restart unhandy-for-happiness
-
-# ログ確認
-docker logs -f unhandy-for-happiness
-```
-
----
-
-### 最新のコードをデプロイする場合
-
-```bash
-# SSH接続後
-cd ~/apps/unhandy_for_happiness
-
-# 最新のコードを取得
-git pull origin main
-
-# 実行権限を確認
-chmod +x bin/docker-entrypoint
-
-# 既存のコンテナを削除
-docker rm -f unhandy-for-happiness
-
-# イメージを再ビルド
-docker build -t unhandy-for-happiness:latest .
-
-# コンテナを起動
-docker run -d \
-  --name unhandy-for-happiness \
-  --network host \
-  --restart always \
-  -e RAILS_ENV=production \
-  -e SECRET_KEY_BASE=<SECRET_KEY_BASE> \
-  -e UNHANDY_FOR_HAPPINESS_DATABASE_PASSWORD='<PASSWORD>' \
-  unhandy-for-happiness:latest
-```
+**詳細な手順**: [`docs/private/DEPLOYMENT_NOTES.md`](docs/private/DEPLOYMENT_NOTES.md) の「運用方法」を参照
 
 ---
 
 ## 🔍 トラブルシューティング
 
-### ブラウザで「接続が拒否されました」と表示される
+### よくあるエラーと対処法
 
-**原因1: EC2インスタンスが停止している**
-- AWSコンソールでインスタンスの状態を確認
-- 停止している場合は起動
+| エラー | 主な原因 | 対処法 |
+|--------|---------|--------|
+| **接続が拒否される** | EC2停止、コンテナ停止、ポート未開放 | インスタンス・コンテナ確認、セキュリティグループ確認 |
+| **SSH timeout** | IPアドレス変更 | `curl ifconfig.me` → セキュリティグループ更新 |
+| **MySQL接続エラー** | 認証方式不一致、権限不足 | `mysql_native_password`確認、権限再設定 |
+| **SECRET_KEY_BASE不足** | 環境変数未設定 | `bin/rails secret`で生成 → `-e`で渡す |
+| **実行権限エラー** | スクリプトに実行権限なし | `chmod +x bin/docker-entrypoint` → 再ビルド |
 
-**原因2: Dockerコンテナが停止している**
-```bash
-# SSH接続後
-docker ps  # 起動中のコンテナを確認
+### 体系的なトラブルシューティング
 
-# もし表示されない場合
-docker ps -a  # すべてのコンテナを確認
-docker start unhandy-for-happiness  # コンテナを起動
-```
+問題発生時は**5段階フロー**で確認：
 
-**原因3: セキュリティグループでポート3000が開いていない**
-- AWSコンソールでセキュリティグループを確認
-- HTTPポート3000を`0.0.0.0/0`に開放
+1. **Level 1**: 接続（EC2、SSH、セキュリティグループ）
+2. **Level 2**: Docker（コンテナ状態、ログ）
+3. **Level 3**: アプリ（環境変数、権限）
+4. **Level 4**: DB（MySQL起動、認証、権限）
+5. **Level 5**: ネットワーク（ポート、ファイアウォール）
 
----
-
-### SSH接続で「Connection timed out」が発生する
-
-**原因: IPアドレスが変わっている**
-
-1. 現在のIPアドレスを確認
-```bash
-curl ifconfig.me
-```
-
-2. AWSコンソールでセキュリティグループのSSHルールを更新
-   - ソースを新しいIPアドレスに変更
-
----
-
-### データベース接続エラーが発生する
-
-**エラーメッセージ例:**
-```
-Access denied for user 'unhandy_for_happiness'@'localhost'
-```
-
-**対処法:**
-
-1. MySQLが起動しているか確認
-```bash
-sudo systemctl status mysql
-```
-
-2. データベースユーザーと権限を確認
-```bash
-sudo mysql
-SELECT user, host FROM mysql.user WHERE user='unhandy_for_happiness';
-SHOW GRANTS FOR 'unhandy_for_happiness'@'localhost';
-EXIT;
-```
-
-3. 必要に応じてユーザーを再作成
-```sql
-DROP USER IF EXISTS 'unhandy_for_happiness'@'localhost';
-CREATE USER 'unhandy_for_happiness'@'localhost' IDENTIFIED WITH mysql_native_password BY 'YourPassword123!';
-GRANT ALL PRIVILEGES ON unhandy_for_happiness_production.* TO 'unhandy_for_happiness'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-4. Dockerコンテナを正しいパスワードで再起動
-
----
-
-### SECRET_KEY_BASEエラーが発生する
-
-**エラーメッセージ:**
-```
-Missing `secret_key_base` for 'production' environment
-```
-
-**対処法:**
-
-1. SECRET_KEY_BASEを生成
-```bash
-docker run --rm unhandy-for-happiness:latest bin/rails secret
-```
-
-2. コンテナ起動時に環境変数として渡す
-```bash
--e SECRET_KEY_BASE=<生成された文字列>
-```
-
----
-
-### ファイルの実行権限エラー
-
-**エラーメッセージ:**
-```
-permission denied: /rails/bin/docker-entrypoint
-```
-
-**対処法:**
-```bash
-chmod +x bin/docker-entrypoint
-# 再ビルドが必要
-docker build -t unhandy-for-happiness:latest .
-```
+**詳細な対処法とコマンド**: [`docs/private/DEPLOYMENT_NOTES.md`](docs/private/DEPLOYMENT_NOTES.md) を参照
 
 ---
 
@@ -745,11 +443,11 @@ docker build -t unhandy-for-happiness:latest .
 
 ## 👤 作成者
 
-**あなたの名前** 🔧 [要変更: 実際の名前に変更]
-- GitHub: [@your-username](https://github.com/your-username) 🔧 [要変更: your-usernameを実際のGitHubユーザー名に変更]
-- Email: your-email@example.com 🔧 [要変更: 実際のメールアドレスに変更]
+**服部康太**
+- GitHub: [@reskillfrom31-lab](https://github.com/reskillfrom31-lab) 🔧 [要変更: your-usernameを実際のGitHubユーザー名に変更]
+- Email: re.skill.from31@gmail.com 🔧 [要変更: 実際のメールアドレスに変更]
 
 ---
 
-**最終更新日:** 2025年12月19日
-
+**最終更新日:** 2026年1月13日  
+**デプロイ実績:** 3回（2025年12月19日、12月28日、2026年1月13日）
